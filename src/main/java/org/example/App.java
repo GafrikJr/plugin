@@ -17,16 +17,16 @@ import java.util.List;
 public class App {
     public static void main( String[] args ) throws GitAPIException, IOException {
         Git git = Git.open(new File("C:\\Users\\timur\\IdeaProjects\\dependencies-counter-maven-plugin\\.git"));
-        List<String> files = getFilesContent(git, "src/main/java/org/example");
+        List<String> files = getFilesContent(git, "src/main/java/org/example", "develop");
         files.stream().filter(f -> f.contains("//TODO")).forEach(System.out::println);
 
     }
 
-    public static List<String> getFilesContent(Git git, String dirPath) throws IOException {
+    public static List<String> getFilesContent(Git git, String dirPath, String branchName) throws IOException {
         List<String> files = new ArrayList<>();
         Repository repository = git.getRepository();
 
-        RevCommit commit = repository.parseCommit(repository.resolve("refs/heads/master"));
+        RevCommit commit = repository.parseCommit(repository.resolve("refs/heads/%s".formatted(branchName)));
         RevTree tree = commit.getTree();
 
         try (TreeWalk treeWalk = TreeWalk.forPath(repository, dirPath, tree)) {
