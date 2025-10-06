@@ -26,7 +26,7 @@ public class App {
         List<String> files = new ArrayList<>();
         Repository repository = git.getRepository();
 
-        RevCommit commit = repository.parseCommit(repository.resolve("HEAD"));
+        RevCommit commit = repository.parseCommit(repository.resolve("refs/heads/master"));
         RevTree tree = commit.getTree();
 
         try (TreeWalk treeWalk = TreeWalk.forPath(repository, dirPath, tree)) {
@@ -45,5 +45,7 @@ public class App {
 
         }
         return files;
+
+        //TODO-AGONA124 fd
     }
 }
