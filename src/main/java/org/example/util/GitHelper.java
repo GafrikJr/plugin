@@ -18,4 +18,5 @@ public class GitHelper {
             return repository.getBranch();
         }
     }
+
 }
