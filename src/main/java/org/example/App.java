@@ -11,21 +11,25 @@ import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.patch.FileHeader;
+
 import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class App {
-    public static void main( String[] args ) throws Exception {
+    public static void main(String[] args) throws Exception {
         Git git = Git.open(new File("C:\\Users\\timur\\IdeaProjects\\dependencies-counter-maven-plugin\\.git"));
 //        List<String> files = getFilesContent(git, "src/main/java/org/example", "develop");
 //        files.stream().filter(f -> f.contains("//TODO")).forEach(System.out::println);
         List<String> diffs = showDetailedBranchDiff(git, "master", "develop");
-        diffs.stream().filter(d -> d.contains("//TODO")).forEach(System.out::println);
+        diffs.stream().filter(d -> isValid(d)).forEach(System.out::println);
+
 
     }
 
@@ -98,4 +102,14 @@ public class App {
             //TODO AGONA-1222
         }
     }
+
+    public static boolean isValid(String diff) {
+        String regex = "^//[A-Z]+ [A-Z]+-\\d+$";
+        Pattern pattern = Pattern.compile(regex);
+
+        Matcher matcher = pattern.matcher(diff);
+
+        return matcher.matches();
+    }
+
 }
