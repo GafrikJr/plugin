@@ -1,7 +1,6 @@
 package org.example;
 
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.Repository;
@@ -28,8 +27,8 @@ public class App {
 //        List<String> files = getFilesContent(git, "src/main/java/org/example", "develop");
 //        files.stream().filter(f -> f.contains("//TODO")).forEach(System.out::println);
         List<String> diffs = showDetailedBranchDiff(git, "master", "develop");
-        diffs.stream().filter(d -> containsComment(d)).forEach(System.out::println);
-
+        diffs.stream().filter(d -> containsCorrectComments(d)).forEach(System.out::println);
+        System.out.println(Pattern.compile("^//[A-Z]+ [A-Z]+-\\d+ [a-z].*$").matcher("//TODO AGONA-1222 fd").matches());
     }
 
     public static List<String> getFilesContent(Git git, String dirPath, String branchName) throws IOException {
@@ -102,16 +101,14 @@ public class App {
         }
     }
 
-    public static boolean containsComment(String diff) {
+    public static boolean containsCorrectComments(String diff) {
         List<String> comments = new ArrayList<>();
         String[] strings = diff.split("\n");
 
         for (String str : strings) {
-            if (str.contains("//")) {
-                Matcher matcher = Pattern.compile("^//[A-Z]+ [A-Z]+-\\d+ [a-z].*$").matcher(str);
-                if (matcher.matches()) {
-                    comments.add(str);
-                }
+            Matcher tokmatcher = Pattern.compile("^//[A-Z]+ [A-Z]+-\\d+ [a-z].*$").matcher(str);
+            if (tokmatcher.matches()) {
+                comments.add(str);
             }
         }
 
