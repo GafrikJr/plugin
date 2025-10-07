@@ -28,8 +28,7 @@ public class App {
 //        List<String> files = getFilesContent(git, "src/main/java/org/example", "develop");
 //        files.stream().filter(f -> f.contains("//TODO")).forEach(System.out::println);
         List<String> diffs = showDetailedBranchDiff(git, "master", "develop");
-        diffs.stream().filter(d -> isValid(d)).forEach(System.out::println);
-
+        diffs.stream().filter(d -> containsComment(d)).forEach(System.out::println);
 
     }
 
@@ -99,17 +98,24 @@ public class App {
                 out.reset();
             }
             return differs;
-            //TODO AGONA-1222
+            //TODO AGONA-1222 change
         }
     }
 
-    public static boolean isValid(String diff) {
-        String regex = "^//[A-Z]+ [A-Z]+-\\d+$";
-        Pattern pattern = Pattern.compile(regex);
+    public static boolean containsComment(String diff) {
+        List<String> comments = new ArrayList<>();
+        String[] strings = diff.split("\n");
 
-        Matcher matcher = pattern.matcher(diff);
+        for (String str : strings) {
+            if (str.contains("//")) {
+                Matcher matcher = Pattern.compile("^//[A-Z]+ [A-Z]+-\\d+ [a-z].*$").matcher(str);
+                if (matcher.matches()) {
+                    comments.add(str);
+                }
+            }
+        }
 
-        return matcher.matches();
+        return !comments.isEmpty();
     }
 
 }
